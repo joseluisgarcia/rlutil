@@ -186,7 +186,8 @@ enum {
 	LIGHTRED,
 	LIGHTMAGENTA,
 	YELLOW,
-	WHITE
+	WHITE,
+	DEFAULT
 };
 
 /**
@@ -227,6 +228,7 @@ const RLUTIL_STRING_T ANSI_LIGHTBLUE = "\033[01;34m";
 const RLUTIL_STRING_T ANSI_LIGHTMAGENTA = "\033[01;35m";
 const RLUTIL_STRING_T ANSI_LIGHTCYAN = "\033[01;36m";
 const RLUTIL_STRING_T ANSI_WHITE = "\033[01;37m";
+const RLUTIL_STRING_T ANSI_DEFAULT = "\033[0m";
 
 /**
  * Consts: Key codes for keyhit()
@@ -402,7 +404,7 @@ RLUTIL_INLINE RLUTIL_STRING_T getANSIColor(const int c) {
 		case 13: return ANSI_LIGHTMAGENTA;
 		case 14: return ANSI_YELLOW; // non-ANSI
 		case 15: return ANSI_WHITE;
-		default: return "";
+		default: return ANSI_DEFAULT;
 	}
 }
 
@@ -450,6 +452,36 @@ RLUTIL_INLINE void locate(int x, int y) {
 	#endif // __cplusplus
 #endif // _WIN32 || USE_ANSI
 }
+
+/// Function: Save cursor position
+#if !defined(_WIN32)
+RLUTIL_INLINE void savePosition() {
+#ifdef __cplusplus
+	std::ostringstream oss;
+	oss << "\033[s";
+	RLUTIL_PRINT(oss.str());
+#else // __cplusplus
+	char buf[32];
+	sprintf(buf, "\033[s");
+	RLUTIL_PRINT(buf);
+#endif // __cplusplus
+}
+#endif // Not -> _WIN32 || USE_ANSI
+
+/// Function: Restore cursor position
+#if !defined(_WIN32)
+RLUTIL_INLINE void restorePosition() {
+#ifdef __cplusplus
+	std::ostringstream oss;
+	oss << "\033[u";
+	RLUTIL_PRINT(oss.str());
+#else // __cplusplus
+	char buf[32];
+	sprintf(buf, "\033[u");
+	RLUTIL_PRINT(buf);
+#endif // __cplusplus
+}
+#endif // Not -> _WIN32 || USE_ANSI
 
 /// Function: hidecursor
 /// Hides the cursor.
